@@ -18,7 +18,15 @@ const plugin = (mermaidConf) => (hook) => {
         next(htmlElement.innerHTML);
     });
 
-    hook.doneEach(() => mermaid.run(mermaidConf));
+    hook.doneEach(() => {
+        if (typeof mermaid.run === 'function') {
+            // mermaid.run() is the v10+ API (requires ESM import)
+            mermaid.run(mermaidConf);
+        } else {
+            // mermaid.init() is the v9 API (works with regular <script> tags)
+            mermaid.init(undefined, mermaidConf.querySelector || '.mermaid');
+        }
+    });
 
 };
 
